@@ -1,0 +1,10 @@
+*/node_modules
+.idea
+*/.idea
+.vscode
+*/.vscode
+*/build
+.DS_Store
+*/.DS_Store
+.history
+*/.history
