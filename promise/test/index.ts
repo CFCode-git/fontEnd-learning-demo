@@ -187,8 +187,8 @@ describe('Promise', () => {
       sinon.fake()
     ];
     promise.then(null,callbacks[0]);
-    promise.then(null,callbacks[1]);
-    promise.then(null,callbacks[2]);
+    promise.then(null, callbacks[1]);
+    promise.then(null, callbacks[2]);
     setTimeout(() => {
       assert(callbacks[0].called);
       assert(callbacks[1].called);
@@ -197,5 +197,36 @@ describe('Promise', () => {
       assert(callbacks[2].calledAfter(callbacks[1]));
       done();
     }, 0);
+  });
+  it('2.2.7 then 必须返回一个 promise .', () => {
+    const promise = new Promise((resolve) => {
+      resolve();
+    });
+    const promise2 = promise.then(() => {}, () => {});
+    assert(promise2 instanceof Promise);
+  });
+  it('2.2.7.1[>>2.3.3]-1 如果 then(succeed,fail) 中的 succeed 返回一个值x (x是一个普通字符串)，运行 [[Resolve]](promise2,x) .', (done) => {
+    const promise1 = new Promise((resolve) => {
+      resolve();
+    });
+    promise1
+      .then(() => '成功', () => {})
+      .then(result => {
+        assert.equal(result, '成功');
+        done();
+      });
+  });
+  it('2.2.7.1[>>2.3.3]-2 如果 then(succeed,fail) 中的 succeed 返回一个值x (x是一个Promise实例)，运行 [[Resolve]](promise2,x) .', (done) => {
+    const promise1 = new Promise((resolve) => {
+      resolve();
+    });
+    const fn = sinon.fake();
+    const promise2 = promise1
+      .then(() => new Promise((resolve) => resolve()), () => {});
+    promise2.then(fn);
+    setTimeout(()=>{
+      assert(fn.called);
+      done()
+    },10)
   });
 });
