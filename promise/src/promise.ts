@@ -5,7 +5,7 @@ class Promise2 {
 
   // succeed 和 fail 的执行函数
   resolve(result) {
-    setTimeout(() => {
+    process.nextTick(() => {
       if (this.state !== 'pending') return;
       this.state = 'fulfilled';
       this.callbacks.forEach(handle => {
@@ -18,7 +18,7 @@ class Promise2 {
   };
 
   reject(reason) {
-    setTimeout(() => {
+    process.nextTick(() => {
       if (this.state !== 'pending') return;
       this.state = 'rejected';
       this.callbacks.forEach(handle => {
