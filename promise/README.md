@@ -12,7 +12,7 @@ https://juejin.cn/post/6844903649852784647
 
 成功返回 {status:'ok',value} , 失败返回 {status:'not ok',reason}
 
-## src -- 手写 Promise
+## src -- 手写 Promise wip 2.2.6
 
 Promise 解决了什么问题？ 
 
@@ -33,3 +33,4 @@ Promise 的两个优点
 对象属性：then finally catch
 
 对象内部属性：state = pending fulfilled rejected
+
