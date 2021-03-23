@@ -5,7 +5,7 @@ import * as sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 
 const assert = chai.assert;
-import Promise from '../src/promise';
+import Promise from '../src/optimizationPromise';
 
 describe('Promise', () => {
   it('是一个类', () => {
