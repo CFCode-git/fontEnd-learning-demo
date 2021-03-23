@@ -2,16 +2,26 @@ class Promise2 {
   // 存储 then 调用的 第一个参数 和 第二个参数
   succeed = null;
   fail = null;
+  state = 'pending';
 
   // succeed 和 fail 的执行函数
-  resolve(){
+  resolve(result) {
     setTimeout(() => {
-      this.succeed();
+      if (this.state !== 'pending') return;
+      this.state = 'fulfilled';
+      if (typeof this.succeed === 'function') {
+        this.succeed.call(undefined,result);
+      }
     }, 0);
   };
-  reject(){
+
+  reject(reason) {
     setTimeout(() => {
-      this.fail();
+      if (this.state !== 'pending') return;
+      this.state = 'rejected';
+      if (typeof this.fail === 'function') {
+        this.fail.call(undefined,reason);
+      }
     }, 0);
   };
 
@@ -23,9 +33,13 @@ class Promise2 {
     fn(this.resolve.bind(this), this.reject.bind(this));
   }
 
-  then(succeed, fail) {
-    this.succeed = succeed;
-    this.fail = fail;
+  then(succeed?, fail?) {
+    if (typeof succeed === 'function') {
+      this.succeed = succeed;
+    }
+    if (typeof fail === 'function') {
+      this.fail = fail;
+    }
   }
 }
 

@@ -62,13 +62,117 @@ describe('Promise', () => {
     const promise = new Promise((resolve, reject) => {
       // 该函数 没有执行
       assert.isFalse(fail.called);
-      reject()
+      reject();
       // 函数已执行
       setTimeout(() => {
         assert.isTrue(fail.called);
-        done()
+        done();
       });
     });
-    promise.then(null,fail);
+    promise.then(null, fail);
+  });
+  it('2.2.1 then 后面的不是函数，必须忽略', () => {
+    const promise = new Promise((resolve) => {
+      resolve();
+    });
+    promise.then(false, null);
+    assert.isTrue(1 === 1);
+  });
+  it('2.2.2 success 必须在 Promise resolve 的时候调用，同时把 resolve 的 value 传给 success，resolve 不能被调用两次',
+    (done) => {
+      const succeed = sinon.fake();
+      const promise = new Promise((resolve) => {
+        assert.isFalse(succeed.called);
+        resolve(233);
+        resolve(445);
+        setTimeout(() => {
+          assert(promise.state === 'fulfilled');
+          assert.isTrue(succeed.calledOnce); // 只被调用一次
+          assert(succeed.calledWith(233)); // 调用的参数来自 第一遍 resolve
+          done();
+        }, 0);
+      });
+      assert(promise.state === 'pending');
+      promise.then(succeed);
+    });
+  it('2.2.3 fail 必须在 Promise reject 的时候调用，同时把 reject 的 reason 传给 fail, 不能被调用两次',
+    (done) => {
+      const fail = sinon.fake();
+      const promise = new Promise((resolve, reject) => {
+        assert.isFalse(fail.called);
+        reject(233);
+        reject(445);
+        setTimeout(() => {
+          assert(promise.state === 'rejected');
+          assert.isTrue(fail.calledOnce); // 只被调用一次
+          assert(fail.calledWith(233)); // 调用的参数来自 第一遍 resolve
+          done();
+        }, 0);
+      });
+      assert(promise.state === 'pending');
+      promise.then(null, fail);
+    });
+  it('2.2.4-1 在当前同步代码执行完毕之前，不能调用 succeed', (done) => {
+    const succeed = sinon.fake();
+    const promise = new Promise((resolve) => {
+      resolve();
+    });
+    promise.then(succeed);
+    assert.isFalse(succeed.called);
+    setTimeout(() => {
+      assert.isTrue(succeed.called);
+      done();
+    }, 0);
+  });
+  it('2.2.4-2 在当前同步代码执行完毕之前，不能调用 fail', (done) => {
+    const fail = sinon.fake();
+    const promise = new Promise((resolve, reject) => {
+      reject();
+    });
+    promise.then(null, fail);
+    assert.isFalse(fail.called);
+    setTimeout(() => {
+      assert.isTrue(fail.called);
+      done();
+    }, 0);
+  });
+  it('2.2.5-1 success 在调用的时候不得带入 promise 实例的 this.', (done) => {
+    const promise = new Promise((resolve) => {
+      resolve();
+    });
+    promise.then(function () {
+      'use strict';
+      assert(this === undefined);
+      done();
+    });
+  });
+  it('2.2.5-2 fail 在调用的时候不得带入 promise 实例的 this.', (done) => {
+    const promise = new Promise((resolve, reject) => {
+      reject();
+    });
+    promise.then(null, function () {
+      'use strict';
+      assert(this === undefined);
+      done();
+    });
+  });
+  xit('2.2.6 then 可以在同一个 Promise 里面被多次调用，且必须按顺序调用 .', (done) => {
+    const promise = new Promise((resolve) => {
+      resolve();
+    });
+    const callbacks = [
+      sinon.fake(),
+      sinon.fake(),
+      sinon.fake()
+    ];
+    promise.then(callbacks[0]);
+    promise.then(callbacks[1]);
+    promise.then(callbacks[2]);
+    setTimeout(() => {
+      assert(callbacks[0].called);
+      assert(callbacks[1].calledAfter(callbacks[0]));
+      assert(callbacks[2].calledAfter(callbacks[1]));
+      done();
+    }, 0);
   });
 });
