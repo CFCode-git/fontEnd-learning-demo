@@ -1,4 +1,8 @@
 import * as chai from 'chai';
+import * as sinon from 'sinon';
+import * as sinonChai from 'sinon-chai';
+
+chai.use(sinonChai);
 
 const assert = chai.assert;
 import Promise from '../src/promise';
@@ -27,40 +31,44 @@ describe('Promise', () => {
     assert.isFunction(promise.then);
   });
   it('new Promise(fn) 中的 fn 立即执行', () => {
-    let called = false;
-    const promise = new Promise(() => {
-      called = true;
-    });
+    let fn = sinon.fake();
+    const promise = new Promise(fn);
     // @ts-ignore
-    assert(called === true);
+    assert(fn.called);
   });
-  it('new Promise(fn) 中的 fn 接受 resolve 和 reject 两个函数', () => {
-    let called = false;
-    const promise = new Promise((resolve, reject) => {
-      called = true;
+  it('new Promise(fn) 中的 fn 接受 resolve 和 reject 两个函数', (done) => {
+    new Promise((resolve, reject) => {
       assert.isFunction(resolve);
       assert.isFunction(reject);
+      done() // done 为了保证上面的两个断言执行
     });
-    // @ts-ignore
-    assert(called === true);
   });
-  it('promise.then(success) 中的 success 会在 resolve 被调用的时候执行', (done) => {
-    let called = false;
+  it('promise.then(success,null) 中的 success 会在 resolve 被调用的时候执行', (done) => {
+    let success = sinon.fake();
     const promise = new Promise((resolve, reject) => {
       // 该函数 没有执行
-      assert.isFalse(called);
+      assert.isFalse(success.called);
       resolve();
       // 函数已执行
       setTimeout(() => {
-        assert.isTrue(called);
+        assert.isTrue(success.called);
         done()
       });
     });
-    promise.then(() => {
-      called = true;
-    },null);
+    promise.then(success,null);
   });
-  it('should .', () => {
-
+  it('promise.then(null,fail) 中的 fail 会在 reject 被调用的时候执行', (done) => {
+    let fail = sinon.fake();
+    const promise = new Promise((resolve, reject) => {
+      // 该函数 没有执行
+      assert.isFalse(fail.called);
+      reject()
+      // 函数已执行
+      setTimeout(() => {
+        assert.isTrue(fail.called);
+        done()
+      });
+    });
+    promise.then(null,fail);
   });
 });
