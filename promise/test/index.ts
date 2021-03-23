@@ -205,7 +205,7 @@ describe('Promise', () => {
     const promise2 = promise.then(() => {}, () => {});
     assert(promise2 instanceof Promise);
   });
-  it('2.2.7.1[>>2.3.3]-1 如果 then(succeed,fail) 中的 succeed 返回一个值x (x是一个普通字符串)，运行 [[Resolve]](promise2,x) .', (done) => {
+  it('2.2.7.1[+2.3.3]-1 如果 then(succeed,fail) 中的 succeed 返回一个值x (x是一个普通字符串)，运行 [[Resolve]](promise2,x) .', (done) => {
     const promise1 = new Promise((resolve) => {
       resolve();
     });
@@ -216,7 +216,7 @@ describe('Promise', () => {
         done();
       });
   });
-  it('2.2.7.1[>>2.3.3]-2 如果 then(succeed,fail) 中的 succeed 返回一个值x (x是一个Promise实例)，运行 [[Resolve]](promise2,x) .', (done) => {
+  it('2.2.7.1[+2.3.3]-2 如果 then(succeed,fail) 中的 succeed 返回一个值x (x是一个Promise实例)，运行 [[Resolve]](promise2,x) .', (done) => {
     const promise1 = new Promise((resolve) => {
       resolve();
     });
@@ -224,9 +224,80 @@ describe('Promise', () => {
     const promise2 = promise1
       .then(() => new Promise((resolve) => resolve()), () => {});
     promise2.then(fn);
-    setTimeout(()=>{
+    setTimeout(() => {
       assert(fn.called);
-      done()
-    })
+      done();
+    });
+  });
+  it('2.2.7.1[+2.3.3]-3 如果 then(succeed,fail) 中的 succeed 返回一个值x (x是一个Promise实例,且失败了)，运行 [[Resolve]](promise2,x) .', (done) => {
+    const promise1 = new Promise((resolve) => {
+      resolve();
+    });
+    const fn = sinon.fake();
+    const promise2 = promise1
+      .then(() => new Promise((resolve, reject) => reject()), () => {});
+    promise2.then(null, fn);
+    setTimeout(() => {
+      assert(fn.called);
+      done();
+    });
+  });
+  it('2.2.7.1[+2.3.3]-3 如果 then(succeed,fail) 中的 fail 返回一个值x (x是一个Promise实例)，运行 [[Resolve]](promise2,x) .', (done) => {
+    const promise1 = new Promise((resolve, reject) => {
+      reject();
+    });
+    const fn = sinon.fake();
+    const promise2 = promise1
+      .then(null, () => new Promise((resolve) => resolve()));
+    promise2.then(fn);
+    setTimeout(() => {
+      assert(fn.called);
+      done();
+    });
+  });
+  it('2.2.7.1[+2.3.3]-4 如果 then(succeed,fail) 中的 fail 返回一个值x (x是一个Promise实例,且失败了)，运行 [[Resolve]](promise2,x) .', (done) => {
+    const promise1 = new Promise((resolve, reject) => {
+      reject();
+    });
+    const fn = sinon.fake();
+    const promise2 = promise1
+      .then(null, () => new Promise((resolve, reject) => reject()));
+    promise2.then(null, fn);
+    setTimeout(() => {
+      assert(fn.called);
+      done();
+    });
+  });
+  it('2.2.7.2-1 如果 success 抛出一个异常e，promise2 必须被拒绝 .', (done) => {
+    const promise1 = new Promise((resolve) => {
+      resolve();
+    });
+    const fn = sinon.fake();
+    let error = new Error();
+    const promise2 = promise1.then(() => { // 如果成功里面抛出错误，会在接下来的失败函数中捕获到这个错误。
+      throw error;
+    });
+    promise2.then(null, fn);
+    setTimeout(() => {
+      assert(fn.called);
+      assert(fn.calledWith(error));
+      done();
+    });
+  });
+  it('2.2.7.2-2 如果 fail 抛出一个异常e，promise2 必须被拒绝 .', (done) => {
+    const promise1 = new Promise((resolve,reject) => {
+      reject();
+    });
+    const fn = sinon.fake();
+    let error = new Error();
+    const promise2 = promise1.then(null,() => { // 如果失败里面抛出错误，会在接下来的失败函数中捕获到这个错误。
+      throw error;
+    });
+    promise2.then(null, fn);
+    setTimeout(() => {
+      assert(fn.called);
+      assert(fn.calledWith(error));
+      done();
+    });
   });
 });

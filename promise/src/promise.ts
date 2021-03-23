@@ -10,7 +10,12 @@ class Promise2 {
       this.state = 'fulfilled';
       this.callbacks.forEach(handle => {
         if (typeof handle[0] === 'function') {
-          const x = handle[0].call(undefined, result);
+          let x;
+          try { // 有可能报错，报错的话将错误传给 返回的新 promise 给 reject 掉
+            x = handle[0].call(undefined, result);
+          } catch (e) {
+            return handle[2].reject(e);
+          }
           handle[2].resolveWith(x);
         }
       });
@@ -23,7 +28,12 @@ class Promise2 {
       this.state = 'rejected';
       this.callbacks.forEach(handle => {
         if (typeof handle[1] === 'function') {
-          const x = handle[1].call(undefined, reason);
+          let x;
+          try {
+            x = handle[1].call(undefined, reason);
+          } catch (e) {
+            return handle[2].reject(e);
+          }
           handle[2].resolveWith(x);
         }
       });
