@@ -21,26 +21,23 @@ Promise.allSettled([
 ]).then((values) => console.log(values));
 
 // 实现 allSettled
-const task1 = () =>
-  new Promise((resolve, reject) => {
+const task1 = () => new Promise((resolve, reject) => {
     setTimeout(() => {
       reject("第1扇门关了");
     }, 3000);
   });
-const task2 = () =>
-  new Promise((resolve, reject) => {
+const task2 = () => new Promise((resolve, reject) => {
     setTimeout(() => {
       reject("第2扇门关了");
     }, 3000);
   });
-const task3 = () =>
-  new Promise((resolve, reject) => {
+const task3 = () => new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve("成功");
     }, 3000);
   });
-// Range 1
 
+// Range 1
 Promise.all([
   task1().then(
     () => ({ status: "ok" }),
@@ -81,6 +78,7 @@ Promise.all(promiseListWrapper([task1(), task2(), task3()])).then((v) =>
   console.log(v)
 );
 
+// Range 2
 // allSettled 实现
 Promise.allSettled2 = function (promiseList) {
   return Promise.all(promiseListWrapper(promiseList));
