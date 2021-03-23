@@ -5,7 +5,7 @@ class Promise2 {
 
   // succeed 和 fail 的执行函数
   resolve(result) {
-    process.nextTick(() => {
+    nextTick(() => {
       if (this.state !== 'pending') return;
       this.state = 'fulfilled';
       this.callbacks.forEach(handle => {
@@ -19,11 +19,11 @@ class Promise2 {
           handle[2].resolveWith(x);
         }
       });
-    }, 0);
+    });
   };
 
   reject(reason) {
-    process.nextTick(() => {
+    nextTick(() => {
       if (this.state !== 'pending') return;
       this.state = 'rejected';
       this.callbacks.forEach(handle => {
@@ -37,7 +37,7 @@ class Promise2 {
           handle[2].resolveWith(x);
         }
       });
-    }, 0);
+    });
   };
 
   constructor(fn) {
@@ -100,3 +100,23 @@ class Promise2 {
 }
 
 export default Promise2;
+
+/**
+ * 浏览器模拟 Node 环境下的 process.nextTick （ 参考Vue.nextTick ）
+ * @param fn
+ */
+function nextTick(fn) {
+  if(process!==undefined && typeof process.nextTick === 'function'){
+    return process.nextTick(fn)
+  }else{
+    let counter = 1;
+    const observer = new MutationObserver(fn);
+    let textNode = document.createTextNode(String(counter));
+
+    observer.observe(textNode, {
+      characterData: true
+    });
+    counter = counter + 1;
+    textNode.data = String(counter);
+  }
+}
