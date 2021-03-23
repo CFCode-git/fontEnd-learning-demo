@@ -156,7 +156,7 @@ describe('Promise', () => {
       done();
     });
   });
-  xit('2.2.6 then 可以在同一个 Promise 里面被多次调用，且必须按顺序调用 .', (done) => {
+  it('2.2.6-1 then 的 succeed 可以在同一个 Promise 里面被多次调用，且必须按顺序调用 .', (done) => {
     const promise = new Promise((resolve) => {
       resolve();
     });
@@ -170,7 +170,30 @@ describe('Promise', () => {
     promise.then(callbacks[2]);
     setTimeout(() => {
       assert(callbacks[0].called);
+      assert(callbacks[1].called);
       assert(callbacks[1].calledAfter(callbacks[0]));
+      assert(callbacks[2].called);
+      assert(callbacks[2].calledAfter(callbacks[1]));
+      done();
+    }, 0);
+  });
+  it('2.2.6-2 then 的 fail 可以在同一个 Promise 里面被多次调用，且必须按顺序调用 .', (done) => {
+    const promise = new Promise((resolve,reject) => {
+      reject();
+    });
+    const callbacks = [
+      sinon.fake(),
+      sinon.fake(),
+      sinon.fake()
+    ];
+    promise.then(null,callbacks[0]);
+    promise.then(null,callbacks[1]);
+    promise.then(null,callbacks[2]);
+    setTimeout(() => {
+      assert(callbacks[0].called);
+      assert(callbacks[1].called);
+      assert(callbacks[1].calledAfter(callbacks[0]));
+      assert(callbacks[2].called);
       assert(callbacks[2].calledAfter(callbacks[1]));
       done();
     }, 0);
