@@ -1,8 +1,10 @@
 // 一个发布订阅器，用于存储对视图的更新事件
 // sub : subscribe 订阅
+let uid = 0
 class Dep {
   constructor() {
     this.subs = []
+    this.id = uid++
   }
   addSub(sub){ // 添加订阅
     this.subs.push(sub)

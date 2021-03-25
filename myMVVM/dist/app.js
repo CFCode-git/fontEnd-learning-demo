@@ -341,10 +341,15 @@ class Watcher {
     this.exp = key
     this.cb = callback
 
+    this.depIds = {} // {dep.id:dep实例}
+
     this.oldValue = this.get() // get 函数执行的结果是会把当前属性对应的watcher实例添加到对应的Dep数组中
   }
   addDep(dep){
-    dep.addSub(this) // dep 实例添加 当前 watcher
+    if(!this.depIds.hasOwnProperty(dep.id)){ // 有dep.id说明该属性的 watcher 添加过了
+      dep.addSub(this) // dep 实例添加 当前 watcher
+      this.depIds[dep.id] = dep
+    }
   }
   get(){
     __WEBPACK_IMPORTED_MODULE_0__dep__["a" /* default */].target = this // 先暂时将 target 置为当前 watcher 实例，在之后触发该属性的getter时作为判断依据
@@ -431,10 +436,16 @@ class Observer {
         console.log(dep)
         return value
       },
+      /**
+       * @desc
+       * 触发setter，dep.notify()将subs里面的watcher全部取出，执行其中的update回调
+       * @param newValue
+       */
       set(newValue){
         if(newValue===value)return
         console.log(`我被设置成了${newValue}`)
         value=newValue
+        childObj = observer(newValue)
         dep.notify()
       }
     })
@@ -450,9 +461,11 @@ class Observer {
 "use strict";
 // 一个发布订阅器，用于存储对视图的更新事件
 // sub : subscribe 订阅
+let uid = 0
 class Dep {
   constructor() {
     this.subs = []
+    this.id = uid++
   }
   addSub(sub){ // 添加订阅
     this.subs.push(sub)
