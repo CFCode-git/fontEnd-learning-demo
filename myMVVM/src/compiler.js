@@ -1,9 +1,11 @@
+import Watcher from './watcher'
+
 class Compiler {
   constructor(el, vm) {
     this.el = document.querySelector(el)
     this.vm = vm
 
-    // 创建节点副本
+    // 创建节点副本 // 虚拟节点
     this.fragment = this.nodeToFragment(this.el)
 
     // 编译节点副本
@@ -14,7 +16,7 @@ class Compiler {
   }
 
   /**
-   *
+   * 创建节点副本
    * @param el 获取到的页面真实节点，此处为 #app 对应的 DOM
    * @desc
    * 创建一个虚拟节点
@@ -25,6 +27,7 @@ class Compiler {
   nodeToFragment(el) {
     let fragment = document.createDocumentFragment()
     let children = el.childNodes
+    // console.log(222,children)
     Array.from(children).forEach(childNode => {
       fragment.appendChild(childNode)
     })
@@ -32,17 +35,17 @@ class Compiler {
   }
 
   /**
-   *
+   * 编译节点副本
    * @param fragment 虚拟节点
-   *
    * @desc
-   * 获取所有虚拟节点的子节点集合，遍历判断： 1=>元素节点； 3=>文本节点
+   * 获取所有虚拟节点的子节点集合，通过遍历判断： 1=>元素节点； 3=>文本节点
    * 针对不同类型的节点选择性编译。
    * >> 文本节点，设置正则，如果文本节点中的元素带有双花括号，则进行文本编译
    * >> 元素节点，执行元素节点编译
    */
   compileElement(fragment) {
     let children = fragment.childNodes
+    // console.log(111,children)
     Array.from(children).forEach(childNode => {
       if (childNode.nodeType === 1) {
         this.compileNodeElement(childNode)
@@ -54,12 +57,11 @@ class Compiler {
 
   compileTextNode(textNode) {
     let textList = this.compileText(textNode.textContent)
-
     let fragment = document.createDocumentFragment()
     let parent = textNode.parentNode
 
     textList.forEach(text => {
-      let el
+      let el  // 文本节点el
       if (text.tag) { // 表明是来自 data 的变量
         el = document.createTextNode('')
         // 传入空文本节点 el， 当前 vm，tag 文本，绑定类型
@@ -79,7 +81,7 @@ class Compiler {
     let match, value
 
     while ((match = mustacheRe.exec(text)) !== null) {
-      console.log(match)
+      // console.log(match)
       // match : ["{{xxx}}","xxx",index,input]
       // 得到 {{...}} 前面的普通文本放入 textList 中
       if (match.index > lastIndex) {
@@ -93,7 +95,6 @@ class Compiler {
       }
 
       // 将 {{...}} 里面的键名作为 tag 传入 textList
-      console.log('match1', match[1])
       value = match[1]
       textList.push({
         value,
@@ -103,7 +104,7 @@ class Compiler {
       // 将 lastIndex 置为当前 {{...}} 之后
       lastIndex = match.index + match[0].length
 
-      console.log(textList)
+      // console.log(textList)
     }
 
     // 由 lastIndex 与 文本长度 判断是否还有剩余文本，放入 textList 中
@@ -113,7 +114,7 @@ class Compiler {
       })
     }
 
-    console.log(textList)
+    // console.log(textList)
     return textList
 
   }
@@ -129,8 +130,6 @@ class Compiler {
         // 获取指令的值和类型
         let value = attr.value
         let type = name.substring(2)
-        console.log('name',name)
-        console.log('type',type)
         directives[type](node,this.vm,value,type)
       }
     })
@@ -142,23 +141,37 @@ class Compiler {
 }
 
 // 指令集合，包含 v-model， v-text，v-for 等指令
+// node 当前节点， vm 当前实例, key data键值， type
 const directives = {
-  text(node,vm,exp,type) {
-    this.bind(node,vm,exp,'text')
+  text(node,vm,key,type) {
+    this.bindData(node,vm,key,'text')
   },
-  model(node,vm,exp,type){
-    this.bind(node,vm,exp,type)
+  model(node,vm,key,type){
+    this.bindData(node,vm,key,type)
+    /**
+     * @desc
+     * 当输入新内容时 对vm.data的相应属性旧值进行设置
+     */
+    node.addEventListener('input',e=>{
+      updater.setVMData(vm,key,e.target.value)
+    })
   },
   // 根据类型统一绑定数据
-  bind(node,vm,exp,type) {
-    let newVal = this.getVMData(vm,exp)
-    updater[type](node,exp,newVal)
+  bindData(node, vm, key, type) {
+    // 获取 tag 文本，执行视图的更新
+    let newVal = this.getVMData(vm,key)
+    updater[type](node,key,newVal)
+    // 在初始化绑定数据到视图的同时，添加对数据的监听器 Watcher
+    new Watcher(vm,key,(newVal)=>{
+      updater[type](node,key,newVal)
+    })
+
   },
   // 获取 data 中的值
-  getVMData(vm,exp) {
-    let expArr = exp.split('.')
+  getVMData(vm,key) {
+    let keyArr = key.split('.')
     let value = vm
-    expArr.forEach(key=>{
+    keyArr.forEach(key=>{
       value = value[key]
     })
     return value
@@ -167,12 +180,26 @@ const directives = {
 
 const updater = {
   // 更新文本类型
-  text(node,exp,value) {
+  text(node,key,value) {
     node.textContent = value
   },
   // v-model
-  model(node,exp,value){
+  model(node,key,value){
     node.value = value
+  },
+  setVMData(vm,key,newValue){
+    let keyArr = key.split('.')
+    let value = vm.data
+    console.log(111,keyArr)
+    console.log(111,keyArr.length)
+    console.log(222,value)
+    keyArr.forEach((key,i)=>{
+      if(i === keyArr.length-1){ // 说明设置值的不是一个对象
+        value[key] = newValue
+      }else{ // 设置值的是一个对象
+        value = value[key]
+      }
+    })
   }
 }
 

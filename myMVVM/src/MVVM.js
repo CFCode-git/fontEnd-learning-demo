@@ -1,16 +1,19 @@
 import Compiler from './compiler'
+import observer from './observer'
 
 class MVVM {
   constructor(options) {
     this.el = options.el
     this.data = options.data
 
-    // data 属性代理到 vm 实例中
+    // 将 data 属性代理到 vm 实例中
     Object.keys(this.data).forEach(key=>{
       this.setProxy(key)
     })
 
-    // 编译节点
+    observer(this.data)
+
+    // 编译节点 model => view
     new Compiler(this.el,this)
   }
 

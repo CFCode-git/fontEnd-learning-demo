@@ -11,10 +11,12 @@
 <body>
 <div id="app">
   <div>msg{{msg}}msg{{message.name}}8888</div>
-  <input type="text" v-model="msg">
+  <label>
+    <input type="text" v-model="msg">
+  </label>
 </div>
 <script>
-  console.log(MVVM)
+  // console.log(MVVM)
   let vm = new MVVM({
     el: '#app',
     data: {

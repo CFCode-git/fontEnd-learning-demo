@@ -3,7 +3,7 @@ var slice = Array.prototype.slice;
 function myBind(asThis) {
   var fn = this;
   if (typeof fn !== "function") {
-    throw new Error("bind 应该由函数调用");
+    throw new Error("bindData 应该由函数调用");
   }
   var args1 = slice.call(arguments, 1);
   function resultFn() {
@@ -36,7 +36,7 @@ function _myBind(asThis, ...args1) {
       ...args2
     );
   }
-  resultFn.prototype = fn.prototype; // 这句话是为了保证 bind 之后的原型是对的 看 test7 测试
+  resultFn.prototype = fn.prototype; // 这句话是为了保证 bindData 之后的原型是对的 看 test7 测试
   return resultFn;
 }
 
