@@ -15,8 +15,7 @@ class Compiler {
     this.el.appendChild(this.fragment)
   }
 
-  /**
-   * 创建节点副本
+  /** 创建节点副本
    * @param el 获取到的页面真实节点，此处为 #app 对应的 DOM
    * @desc
    * 创建一个虚拟节点
@@ -34,8 +33,7 @@ class Compiler {
     return fragment
   }
 
-  /**
-   * 编译节点副本
+  /** 编译节点副本
    * @param fragment 虚拟节点
    * @desc
    * 获取所有虚拟节点的子节点集合，通过遍历判断： 1=>元素节点； 3=>文本节点
@@ -85,7 +83,6 @@ class Compiler {
       // match : ["{{xxx}}","xxx",index,input]
       // 得到 {{...}} 前面的普通文本放入 textList 中
       if (match.index > lastIndex) {
-        // console.log(1)
         // console.log(text)
         // console.log(lastIndex, match.index)
         // console.log(2, text.slice(lastIndex, match.index))
@@ -190,9 +187,6 @@ const updater = {
   setVMData(vm,key,newValue){
     let keyArr = key.split('.')
     let value = vm.data
-    console.log(111,keyArr)
-    console.log(111,keyArr.length)
-    console.log(222,value)
     keyArr.forEach((key,i)=>{
       if(i === keyArr.length-1){ // 说明设置值的不是一个对象
         value[key] = newValue

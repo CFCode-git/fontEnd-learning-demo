@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -68,9 +68,48 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+// 一个发布订阅器，用于存储对视图的更新事件
+// sub : subscribe 订阅
+let uid = 0
+class Dep {
+  constructor() {
+    this.subs = [];
+    this.id = uid++;
+    // console.log('dep了一次,id是',this.id)
+  }
+  addSub(sub) {
+    // 添加订阅
+    this.subs.push(sub);
+    // console.log('add 了',this.subs)
+  }
+  removeSub(sub) {
+    // 移除订阅
+    let index = this.subs.indexOf(sub);
+    if (index !== -1) {
+      this.subs.splice(index, 1);
+    }
+  }
+  notify() {
+    // 逐个执行 watcher 的更新
+    console.log(this.subs);
+    this.subs.forEach((sub) => sub.update());
+  }
+  depend() {
+    Dep.target.addDep(this);
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Dep);
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__compiler__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__observer__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__compiler__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__observer__ = __webpack_require__(4);
 
 
 
@@ -114,11 +153,11 @@ window.MVVM = MVVM
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__watcher__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__watcher__ = __webpack_require__(3);
 
 
 class Compiler {
@@ -136,8 +175,7 @@ class Compiler {
     this.el.appendChild(this.fragment)
   }
 
-  /**
-   * 创建节点副本
+  /** 创建节点副本
    * @param el 获取到的页面真实节点，此处为 #app 对应的 DOM
    * @desc
    * 创建一个虚拟节点
@@ -155,8 +193,7 @@ class Compiler {
     return fragment
   }
 
-  /**
-   * 编译节点副本
+  /** 编译节点副本
    * @param fragment 虚拟节点
    * @desc
    * 获取所有虚拟节点的子节点集合，通过遍历判断： 1=>元素节点； 3=>文本节点
@@ -206,7 +243,6 @@ class Compiler {
       // match : ["{{xxx}}","xxx",index,input]
       // 得到 {{...}} 前面的普通文本放入 textList 中
       if (match.index > lastIndex) {
-        // console.log(1)
         // console.log(text)
         // console.log(lastIndex, match.index)
         // console.log(2, text.slice(lastIndex, match.index))
@@ -311,9 +347,6 @@ const updater = {
   setVMData(vm,key,newValue){
     let keyArr = key.split('.')
     let value = vm.data
-    console.log(111,keyArr)
-    console.log(111,keyArr.length)
-    console.log(222,value)
     keyArr.forEach((key,i)=>{
       if(i === keyArr.length-1){ // 说明设置值的不是一个对象
         value[key] = newValue
@@ -328,11 +361,11 @@ const updater = {
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dep__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dep__ = __webpack_require__(0);
 
 
 class Watcher {
@@ -398,11 +431,11 @@ class Watcher {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dep__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dep__ = __webpack_require__(0);
 
 
 // 观察者 Observer 中实现对所有数据的getter/setter
@@ -424,67 +457,36 @@ class Observer {
   }
   bindDescriptor(data,key,value){
     // 递归操作
-    //observer(value)
-    let childObj = observer(value)
-    let dep = new __WEBPACK_IMPORTED_MODULE_0__dep__["a" /* default */]()
-    Object.defineProperty(data,key,{
-      get(){
+    // observer(value);
+    let childObj = observer(value);;
+    // console.log(`new了dep, key是${key}`);
+    let dep = new __WEBPACK_IMPORTED_MODULE_0__dep__["a" /* default */]();;
+    Object.defineProperty(data,  key,  {
+      get()  {
         // 如果 target 非空 表示改属性已经有监听器了 触发依赖添加事件 depend
-        if(__WEBPACK_IMPORTED_MODULE_0__dep__["a" /* default */].target){ // Dep.target 就是被监听属性的 Watcher 实例
-          dep.depend()
+        if (__WEBPACK_IMPORTED_MODULE_0__dep__["a" /* default */].target) {
+          // Dep.target 就是被监听属性的 Watcher 实例
+          dep.depend();
         }
-        console.log(dep)
-        return value
+        // console.log(dep)
+        return value;
       },
       /**
        * @desc
        * 触发setter，dep.notify()将subs里面的watcher全部取出，执行其中的update回调
        * @param newValue
        */
-      set(newValue){
-        if(newValue===value)return
-        console.log(`我被设置成了${newValue}`)
-        value=newValue
-        childObj = observer(newValue)
-        dep.notify()
-      }
-    })
+      set(newValue)  {
+        if (newValue === value) return;
+        // console.log(`我被设置成了${newValue}`);
+        value = newValue;
+        childObj = observer(newValue);
+        dep.notify();
+      },
+    });
   }
 }
 /* harmony default export */ __webpack_exports__["a"] = (observer);
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-// 一个发布订阅器，用于存储对视图的更新事件
-// sub : subscribe 订阅
-let uid = 0
-class Dep {
-  constructor() {
-    this.subs = []
-    this.id = uid++
-  }
-  addSub(sub){ // 添加订阅
-    this.subs.push(sub)
-  }
-  removeSub(sub){ // 移除订阅
-    let index = this.subs.indexOf(sub)
-    if(index!==-1){
-      this.subs.splice(index,1)
-    }
-  }
-  notify(){ // 逐个执行 watcher 的更新
-    this.subs.forEach(sub=>sub.update())
-  }
-  depend(){
-    Dep.target.addDep(this)
-  }
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (Dep);
 
 
 /***/ })
