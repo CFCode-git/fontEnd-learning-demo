@@ -1,0 +1,18 @@
+{
+  "name": "axios-demo",
+  "version": "1.0.0",
+  "description": "axios 是基于 promise 的 http 库，它拥有许多优秀的特性，比如拦截请求和响应，取消请求，转换json，客户端防御 XSRF 等。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "qs": "^6.10.1",
+    "vant": "^2.12.10",
+    "vuex": "^3.6.2"
+  }
+}
