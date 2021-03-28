@@ -9,3 +9,12 @@ axios 是基于 promise 的 http 库，它拥有许多优秀的特性，比如�
 * http.js 用来封装 axios
 
 * api.js 用来统一管理接口
+
+
+## axios 配置的优先级
+
+1. 在 lib/default.js 找到的库的默认值
+
+2. 实例的 defaults 属性
+
+3. 请求的 config 参数
