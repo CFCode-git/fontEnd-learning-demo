@@ -1,16 +1,15 @@
-class Singleton {
-  constructor (name) {
-    this.name = name
-  }
-  // 静态方法
-  static getInstance (name) {
-    if (!this.instance) {
-      this.instance = new Singleton(name)
+// 事件委托
+function delegate(element, eventType, selector, fn) {
+  element.addEventListener(eventType, e => {
+    let el = e.target
+    while (!el.matches(selector)) {
+      if (element === el) {
+        el = null
+        break
+      }
+      el = el.parentNode
     }
-    return this.instance
-  }
+    el && fn.call(el, e, el)
+  })
+  return element
 }
-let a = Singleton.getInstance('a1')
-let b = Singleton.getInstance('b2')
-console.log(a === b)
-
