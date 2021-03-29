@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>draggable div</title>
+  <style>
+    *{padding:0;margin:0;box-sizing: border-box;}
+    #xx {
+      width: 100px;
+      height: 100px;
+      border: 1px solid red;
+      position: relative;
+    }
+    #xx:hover{
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div id="xx"></div>
+</body>
+
+<script>
+  let dragging = false
+  let position = [null, null]
+
+  const div = document.querySelector('#xx')
+
+  div.addEventListener('mousedown', (e) => {
+    console.log('hi')
+    dragging = true
+    position = [e.clientX, e.clientY]
+  })
+
+  document.addEventListener('mousemove', (e) => {
+    if (!dragging) return
+    const x = e.clientX
+    const y = e.clientY
+    const deltaX = x - position[0]
+    const deltaY = y - position[1]
+    const left = parseInt(div.style.left || 0)
+    const top = parseInt(div.style.top || 0)
+    div.style.left = left + deltaX + 'px'
+    div.style.top = top + deltaY + 'px'
+    position = [x, y]
+  })
+
+
+  document.addEventListener('mouseup', () => {
+    dragging = false
+  })
+</script>
+
+</html>
