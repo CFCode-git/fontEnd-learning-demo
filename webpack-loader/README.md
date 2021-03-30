@@ -4,6 +4,23 @@ webpack 只能理解 JavaScript 和 JSON 文件，因此我们需要 loader 去�
 
 loader 的本质就是一个导出函数的 node 模块。该函数会在 webpack 转换源模块的时候调用。调用的时候，该函数会得到处理模块的内容，可能是字符串，也可能是二进制。
 
+## 使用本地loader
+
+可通过 webpack.config.js 中定义 loader 的位置，webpack会自动查找是否存在对应的 loader
+
+```js
+// webpack.config.js
+module.exports={
+//......
+  resolveLoader:{
+    modules:['node_modules','./loaders']
+  },
+//......
+}
+
+
+```
+
 ## 如何获得 loader 的options
 
 借助 webpack 提供的工具：loader-utils
