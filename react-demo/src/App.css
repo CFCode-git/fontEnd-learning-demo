@@ -1,0 +1,21 @@
+.fnRedux, .classRedux{
+  margin:20px;
+  border:2px solid #fdd;
+  padding: 20px
+}
+.count{
+  border:1px solid #f60;
+  padding:10px;
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+.calculator{
+  border:2px solid #54648f;
+  padding:10px
+}
+.calculator > button{
+  min-height:48px;
+  min-width:64px;
+  margin:10px;
+  font-size: 32px;
+}
