@@ -1,0 +1,20 @@
+{
+  "name": "webpack-plugin",
+  "version": "1.0.0",
+  "description": "webpack在整个编译周期会触发很多不同的事件，借助Tapable, plugin可以监听这些事件，在webpack执行的过程中做一些不一样的事情。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack-dev-server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "webpack-dev-server": "^3.11.2"
+  },
+  "devDependencies": {
+    "webpack": "^4.46.0",
+    "webpack-cli": "^3.3.10"
+  }
+}
