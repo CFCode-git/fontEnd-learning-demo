@@ -42,6 +42,7 @@
 // }
 
 
+// new 模拟实现
 function objectFactory(){
   const obj = new Object()
   const constructor = [].shift.call(arguments)
@@ -50,32 +51,35 @@ function objectFactory(){
   return typeof result === 'object' ? (result || obj/*避免null*/) : obj
 }
 
-function fn3(name,age){
-  this.strength = 60;
-  this.age = age
-  return {
-    name:name,
-    habit:'Games'
+{
+  function fn3(name,age){
+    this.strength = 60;
+    this.age = age
+    return {
+      name:name,
+      habit:'Games'
+    }
   }
+
+  let f3 = objectFactory(fn3,'jack',18)
+
+  console.log(f3.name) // jack
+  console.log(f3.habit) // Games
+  console.log(f3.age) // undefined
+  console.log(f3.strength) // undefined
+
+  function fn4(name,age){
+    this.strength = 60;
+    this.age = age
+    return 'hello boy'
+  }
+
+
+  let f4 = objectFactory(fn4,'jack',18)
+
+  console.log(f4.name) // undefined
+  console.log(f4.habit) // undefined
+  console.log(f4.age) // 18
+  console.log(f4.strength) // 60
+
 }
-
-let f3 = objectFactory(fn3,'jack',18)
-
-console.log(f3.name) // jack
-console.log(f3.habit) // Games
-console.log(f3.age) // undefined
-console.log(f3.strength) // undefined
-
-function fn4(name,age){
-  this.strength = 60;
-  this.age = age
-  return 'hello boy'
-}
-
-
-let f4 = objectFactory(fn4,'jack',18)
-
-console.log(f4.name) // undefined
-console.log(f4.habit) // undefined
-console.log(f4.age) // 18
-console.log(f4.strength) // 60
