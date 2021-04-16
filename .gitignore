@@ -8,3 +8,6 @@
 */.DS_Store
 .history
 */.history
+*.tmp.js
+/index1.tmp.js
+/index2.tmp.js
