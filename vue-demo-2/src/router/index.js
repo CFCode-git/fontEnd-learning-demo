@@ -29,6 +29,8 @@ const transitionDemo = () =>
   import(/* webpackChunkName:'transition-demo' */ '../views/transition-demo/transition-demo.vue')
 const directiveDemo = () =>
   import(/* webpackChunkName:'directive-demo' */ '../views/directive-demo/directive-demo.vue')
+const pluginDemo = () =>
+  import(/* webpackChunkName:'plugin-demo' */ '../views/plugin-demo/plugin-demo.vue')
 
 const routes = [
   {
@@ -100,6 +102,11 @@ const routes = [
     path: '/directive-demo',
     name: 'directive-demo',
     component: directiveDemo
+  },
+  {
+    path: '/plugin-demo',
+    name: 'plugin-demo',
+    component: pluginDemo
   },
 ];
 
