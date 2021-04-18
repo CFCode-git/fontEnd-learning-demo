@@ -9,7 +9,8 @@
     <router-link to="/test-slot-demo">test slot demo</router-link> |
     <router-link to="/test-is-component-demo">动态组件：test is component demo</router-link> |
     <router-link to="/toast-demo">动态创建实例</router-link> |
-    <router-link to="/transition-demo">vue transition 动画 demo</router-link>
+    <router-link to="/transition-demo">vue transition 动画 demo</router-link> |
+    <router-link to="/directive-demo">directive 自定义指令 demo</router-link>
     <div>
       <keep-alive include="test-keep-alive">
 <!--      <keep-alive>-->

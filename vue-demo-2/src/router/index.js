@@ -27,6 +27,8 @@ const toastDemo = () =>
   import(/* webpackChunkName:'toast-demo' */ '../views/toast-demo.vue')
 const transitionDemo = () =>
   import(/* webpackChunkName:'transition-demo' */ '../views/transition-demo/transition-demo.vue')
+const directiveDemo = () =>
+  import(/* webpackChunkName:'directive-demo' */ '../views/directive-demo/directive-demo.vue')
 
 const routes = [
   {
@@ -93,6 +95,11 @@ const routes = [
     path: '/transition-demo',
     name: 'transition-demo',
     component: transitionDemo
+  },
+  {
+    path: '/directive-demo',
+    name: 'directive-demo',
+    component: directiveDemo
   },
 ];
 

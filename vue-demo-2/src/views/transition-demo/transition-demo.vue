@@ -1,7 +1,6 @@
 <template>
   <div>
     transition test
-    <button @click="makeVM">click me</button>
     <toast></toast>
   </div>
 </template>
