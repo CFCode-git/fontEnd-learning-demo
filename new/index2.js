@@ -35,6 +35,7 @@ function objFactory(){
     let constructor = [].shift.call(arguments)
     if(typeof constructor !== 'function'){
       console.error('type error')
+      return
     }
     newObject=Object.create(constructor.prototype)
     result = constructor.apply(newObject,arguments)

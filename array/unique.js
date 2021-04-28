@@ -47,7 +47,6 @@ function unique3(arr) {
   let obj = {};
   let a = arr.filter((item, index, arr) => {
     if (obj.hasOwnProperty(typeof item + item)) {
-      // console.log(item, obj, "return false");
       return false;
     } else {
       obj[typeof item + item] = true;
