@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>web worker</title>
+</head>
+<body>
+<div>
+  <button id="fibonacci">click me</button>
+  <button id="hey">hey</button>
+</div>
+<script>
+  let worker
+  worker = new Worker('worker.js')
+  worker.onmessage=function(event){
+    let data = event.data
+    console.log(data)
+  }
+  worker.onerror =function(event){
+    console.log(event.filename,event.lineo,event.message)
+  }
+
+  document.querySelector('#fibonacci').onclick = function () {
+    console.log('hey you clicked the button')
+    worker.postMessage(38)
+  }
+  document.querySelector('#hey').onclick = function () {
+    console.log('hey')
+  }
+</script>
+</body>
+</html>
