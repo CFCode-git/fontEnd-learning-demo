@@ -39,8 +39,43 @@ function echo4<T extends echoLength>(arg: T): T {
 
 echo4([1, 11, 1, 1]);
 
-// 类型守卫
+// 类型守卫 -- 顶的 其实就是一个用来判断参数具体类型的函数 整这么高级的词干啥。。
+interface Bird{
+  fly();
+  layEggs()
+}
+interface Fish{
+  swim();
+  layEggs()
+}
+// @ts-ignore
+function getSmallPet():Fish|Bird{
+  // ...
+}
 
+let pet = getSmallPet();
+pet.layEggs(); // ok
+// @ts-ignore
+pet.swim(); // error
+
+function isFish(pet:Fish|Bird):pet is Fish{
+  return (<Fish>pet).swim !== undefined
+}
+
+if(isFish(pet)){
+  pet.swim()
+}else{
+  pet.fly()
+}
+
+function isNumber(x: any): x is number {
+  return typeof x === "number";
+}
+
+function isString(x: any): x is string {
+  return typeof x === "string";
+}
+// typeof 可以直接被识别为类型保护，不需要写上面两个函数也行。
 
 /*
 * unknown any never number string boolean null undefined void
