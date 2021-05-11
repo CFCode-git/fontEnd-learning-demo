@@ -1,5 +1,7 @@
 # interface VS type // 接口 VS 类型别名
 
+https://www.tslang.cn/docs/handbook/advanced-types.html
+
 * interface 创建了一个新的名字，可以在其他任意地方使用。 type 并不会创建新的名字，报错信息不会显示别名。
 
 鼠标悬停于 Alias 与 Interface 中，前者返回的是字面量，后者返回的是 Interface
